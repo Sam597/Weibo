@@ -176,12 +176,6 @@ NSString *const MJTableViewCellIdentifier = @"Cell";
 - (void)getUserInfoSuccess:(WeiboCommonAPI *)api andUserName:(NSString *)userName
 {
     
-    if(!self.weiboTableView){
-        [self.view reloadInputViews];
-        [weiboApi getHomeWeiboData];
-    }
-    [self.weiboApi getHomeWeiboData];
-    
     //跳转
     if (delegate && [delegate respondsToSelector:@selector(oauthFinsh)]) {
         [delegate oauthFinsh];
