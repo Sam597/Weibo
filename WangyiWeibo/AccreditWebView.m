@@ -133,7 +133,10 @@
 {
     NSLog(@"home delegate");
     [self dismissViewControllerAnimated:YES completion:nil];
-//    self.home.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
 //    [self presentViewController:self.home animated:YES completion:nil];
+    //1.取得通知中心
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    //2.发送广播
+    [nc postNotificationName:@"refreshHomeWeibo" object:self userInfo:nil];
 }
 @end

@@ -347,7 +347,7 @@ enum RequestId {
     NSString *urlss = @"http://api.t.163.com/statuses/user_timeline.json";
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     //传递参数
-    [parameters setObject:@"2" forKey:@"count"];
+    [parameters setObject:@"10" forKey:@"count"];
     [parameters setObject:@"hanqm1314" forKey:@"name"];
     
     //returnData就是返回得到的数据

@@ -68,6 +68,8 @@ NSString *const MJTableViewCellIdentifier = @"Cell";
         //获取微博数据
         [weiboApi getHomeWeiboData];
     }
+    //注册监听事件
+    [self wantToRefreshHomeWeibo];
     
     
     
@@ -175,7 +177,6 @@ NSString *const MJTableViewCellIdentifier = @"Cell";
 //获取userInfo 成功
 - (void)getUserInfoSuccess:(WeiboCommonAPI *)api andUserName:(NSString *)userName
 {
-    
     //跳转
     if (delegate && [delegate respondsToSelector:@selector(oauthFinsh)]) {
         [delegate oauthFinsh];
@@ -286,21 +287,27 @@ NSString *const MJTableViewCellIdentifier = @"Cell";
 
 - (void)headerRereshing
 {
-    //添加真数据
-    NSArray *weiboArray = [self.weiboModels objectAtIndex:0];
-    WeiboModel *weiboModelRow = (WeiboModel *)weiboArray;
-//    [self rereshingApi:weiboModelRow.cursor_id andRereshType:@"max_id"];
-//    NSLog(@"cursor_id :%@",weiboModelRow.cursor_id);
-    [weiboApi getHomeRereshWeiboDataWithCursorId:weiboModelRow.cursor_id andType:@"max_id"];
-    
-    // 2.2秒后刷新表格UI
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        // 刷新表格
-        [self.weiboTableView reloadData];
+    if (self.weiboTableView) {
+        //添加真数据
+        NSArray *weiboArray = [self.weiboModels objectAtIndex:0];
+        WeiboModel *weiboModelRow = (WeiboModel *)weiboArray;
+        //    [self rereshingApi:weiboModelRow.cursor_id andRereshType:@"max_id"];
+        //    NSLog(@"cursor_id :%@",weiboModelRow.cursor_id);
+        [weiboApi getHomeRereshWeiboDataWithCursorId:weiboModelRow.cursor_id andType:@"max_id"];
         
-        // (最好在刷新表格后调用)调用endRefreshing可以结束刷新状态
-        [self.weiboTableView headerEndRefreshing];
-    });
+        // 2.2秒后刷新表格UI
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            // 刷新表格
+            [self.weiboTableView reloadData];
+            
+            // (最好在刷新表格后调用)调用endRefreshing可以结束刷新状态
+            [self.weiboTableView headerEndRefreshing];
+        });
+    }else{
+        [self init];
+        [self viewDidLoad];
+    }
+   
 }
 
 - (void)footerRereshing
@@ -319,6 +326,11 @@ NSString *const MJTableViewCellIdentifier = @"Cell";
         [self.weiboTableView footerEndRefreshing];
     });
 }
-
+#pragma mark 监听发布微博事件
+//监听发布微博页面通知
+-(void)wantToRefreshHomeWeibo
+{
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(headerRereshing) name:@"refreshHomeWeibo" object:nil];
+}
 
 @end
